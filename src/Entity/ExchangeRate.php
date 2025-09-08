@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\ExchangeRateRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Context;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
 class ExchangeRate
@@ -20,6 +22,7 @@ class ExchangeRate
     #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 8)]
     private ?string $price = null;
 
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 

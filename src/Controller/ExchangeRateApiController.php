@@ -28,6 +28,7 @@ final class ExchangeRateApiController extends AbstractController
     {
         $symbols = $request->get('symbols', []);
         $rates = $this->exchangeRateService->getRates(json_decode($symbols));
+        //dd($rates);
 
         return $this->json([
             'data' => $rates,
@@ -38,12 +39,10 @@ final class ExchangeRateApiController extends AbstractController
     public function save(Request $request): JsonResponse
     {
         $symbols = $request->get('symbols', []);
-        $rates = $this->exchangeRateService->getRates(json_decode($symbols));
-
-        $this->exchangeRateService->saveRates($rates);
+        $this->exchangeRateService->saveRates(json_decode($symbols));
 
         return $this->json([
-            'data' => $rates,
+            'success' => true,
         ]);
     }
 }
