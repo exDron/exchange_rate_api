@@ -14,35 +14,33 @@ final class ExchangeRateApiController extends AbstractController
     {
     }
 
-    #[Route('/exchange/rate/api', name: 'app_exchange_rate_api')]
-    public function index(): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ExchangeRateApiController.php',
-        ]);
-    }
-
     #[Route('/api/rates/last-24h', name: 'app_rate_last24h')]
     public function getLast24hRates(Request $request): JsonResponse
     {
-        $symbols = $request->get('symbols', []);
-        $rates = $this->exchangeRateService->getRates(json_decode($symbols));
-        //dd($rates);
+        $pair = $request->get('pair');
+
+        $symbols = explode('/', $pair);
+        $symbols = implode('', array_reverse($symbols));
+        $rates = $this->exchangeRateService->getLast24hRates($symbols);
 
         return $this->json([
             'data' => $rates,
         ]);
     }
 
-    #[Route('/api/rates/save', name: 'app_rate_save')]
-    public function save(Request $request): JsonResponse
+    #[Route('/api/rates/day', name: 'app_rate_get_selected_day')]
+    public function getSelectedDayRates(Request $request): JsonResponse
     {
-        $symbols = $request->get('symbols', []);
-        $this->exchangeRateService->saveRates(json_decode($symbols));
+        $pair = $request->get('pair');
+        $date = $request->get('date');
+
+        $symbols = explode('/', $pair);
+        $symbols = implode('', array_reverse($symbols));
+        $day = new \DateTimeImmutable($date);
+        $rates = $this->exchangeRateService->getSelectedDayRates($symbols, $day);
 
         return $this->json([
-            'success' => true,
+            'data' => $rates,
         ]);
     }
 }

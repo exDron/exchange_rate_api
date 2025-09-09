@@ -4,12 +4,12 @@ namespace App\Scheduler\Message;
 
 readonly class SaveExchangeRate
 {
-    public function __construct(private array $currencies)
+    public function __construct(private array $pairs)
     {
     }
 
-    public function getCurrencies(): array
+    public function getPairs(): array
     {
-        return $this->currencies;
+        return $this->pairs;
     }
 }

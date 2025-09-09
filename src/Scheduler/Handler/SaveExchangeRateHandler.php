@@ -15,6 +15,6 @@ readonly class SaveExchangeRateHandler
 
     public function __invoke(SaveExchangeRate $message): void
     {
-        $this->exchangeRateService->saveRates($message->getCurrencies());
+        $this->exchangeRateService->saveRates($message->getPairs());
     }
 }

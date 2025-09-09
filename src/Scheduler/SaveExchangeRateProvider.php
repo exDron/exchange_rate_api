@@ -9,8 +9,9 @@ use Symfony\Component\Scheduler\Schedule;
 use Symfony\Component\Scheduler\ScheduleProviderInterface;
 
 #[AsSchedule('SaveExchangeRate')]
-class SaveExchangeRateProvider implements ScheduleProviderInterface
+readonly class SaveExchangeRateProvider implements ScheduleProviderInterface
 {
+    private ?Schedule $schedule;
     public function __construct()
     {
     }
@@ -19,7 +20,7 @@ class SaveExchangeRateProvider implements ScheduleProviderInterface
     {
         return $this->schedule ??= new Schedule()
             ->with(
-                RecurringMessage::every('1 minute', new SaveExchangeRate(["BTCEUR", "ETHEUR"]))
+                RecurringMessage::every('5 minutes', new SaveExchangeRate(['BTCEUR', 'ETHEUR', 'LTCEUR']))
             );
     }
 }

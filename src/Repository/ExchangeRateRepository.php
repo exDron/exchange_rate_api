@@ -21,11 +21,12 @@ class ExchangeRateRepository extends ServiceEntityRepository
      * @return ExchangeRate[] Returns an array of ExchangeRate objects
      * @throws DateMalformedStringException
      */
-    public function getLast24hRates(array $symbols): array
+    public function getLast24hRates(string $symbols): array
     {
         $last24H = new \DateTimeImmutable()->modify('-24 hours')->format('Y-m-d H:i:s');
+
         return $this->createQueryBuilder('er')
-            ->andWhere('er.symbol IN (:symbols)')
+            ->andWhere('er.symbol = :symbols')
             ->andWhere('er.createdAt > :last24h')
             ->setParameter('symbols', $symbols)
             ->setParameter('last24h', $last24H)
@@ -33,13 +34,22 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    //    public function findOneBySomeField($value): ?ExchangeRate
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * @return ExchangeRate[] Returns an array of ExchangeRate objects
+     * @throws DateMalformedStringException
+     */
+    public function getSelectedDayRates(string $symbols, \DateTimeImmutable $day): array
+    {
+        $nextDay = $day->modify('+1 day')->format('Y-m-d H:i:s');
+
+        return $this->createQueryBuilder('er')
+            ->andWhere('er.symbol = :symbols')
+            ->andWhere('er.createdAt > :day')
+            ->andWhere('er.createdAt < :nextDay')
+            ->setParameter('symbols', $symbols)
+            ->setParameter('day', $day)
+            ->setParameter('nextDay', $nextDay)
+            ->getQuery()
+            ->getResult();
+    }
 }

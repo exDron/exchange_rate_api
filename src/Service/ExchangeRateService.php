@@ -14,11 +14,20 @@ readonly class ExchangeRateService
     {
     }
 
-    public function getRates(array $symbols = []): array
+    public function getLast24hRates(string $symbols): array
     {
         /* @var ExchangeRateRepository $exchangeRatesRepository */
         $exchangeRatesRepository = $this->entityManager->getRepository(ExchangeRate::class);
         $rates = $exchangeRatesRepository->getLast24hRates($symbols);
+
+        return $rates;
+    }
+
+    public function getSelectedDayRates(string $symbols, \DateTimeImmutable $day): array
+    {
+        /* @var ExchangeRateRepository $exchangeRatesRepository */
+        $exchangeRatesRepository = $this->entityManager->getRepository(ExchangeRate::class);
+        $rates = $exchangeRatesRepository->getSelectedDayRates($symbols, $day);
 
         return $rates;
     }
