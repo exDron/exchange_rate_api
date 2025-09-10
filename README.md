@@ -22,6 +22,9 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
 
 ## Web API application
 
+ - On the `docker compose up` the application starts **Scheduler** tasks to parse exchange rates every 5 minutes
+   (The command is here: [compose.yaml](compose.yaml?L58))
+
 ### The app has two endpoints:
 1. `https://localhost/api/rates/last-24h?pair=EUR/ETH`
    - Rates for the last 24 hours(every 5 minutes)
@@ -51,7 +54,6 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
                     "x": "2025-09-10 07:28:16",
                     "y": 95803.56
                 },
-                ...
             ],
             "borderColor": "rgba(75, 192, 192, 1)",
             "backgroundColor": "rgba(75, 192, 192, 0.2)",
