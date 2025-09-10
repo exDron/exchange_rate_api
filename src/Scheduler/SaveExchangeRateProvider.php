@@ -9,16 +9,18 @@ use Symfony\Component\Scheduler\Schedule;
 use Symfony\Component\Scheduler\ScheduleProviderInterface;
 
 #[AsSchedule('SaveExchangeRate')]
-readonly class SaveExchangeRateProvider implements ScheduleProviderInterface
+class SaveExchangeRateProvider implements ScheduleProviderInterface
 {
-    private ?Schedule $schedule;
+    private readonly Schedule $schedule;
+
     public function __construct()
     {
+        $this->schedule = new Schedule();
     }
 
     public function getSchedule(): Schedule
     {
-        return $this->schedule ??= new Schedule()
+        return $this->schedule
             ->with(
                 RecurringMessage::every('5 minutes', new SaveExchangeRate(['BTCEUR', 'ETHEUR', 'LTCEUR']))
             );

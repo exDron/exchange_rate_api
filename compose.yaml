@@ -53,17 +53,9 @@ services:
       - ./:/var/www/app
     depends_on:
       - php
-      - rabbitmq
       - database
     command: >
       sh -c "php bin/console messenger:consume scheduler_SaveExchangeRate -vv --memory-limit=128M --no-interaction"
-
-  rabbitmq:
-    image: rabbitmq:4.1.4-management
-    container_name: rabbitmq
-    ports:
-      - '5672:5672'
-      - '15672:15672'
 
 volumes:
   caddy_data:

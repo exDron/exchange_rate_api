@@ -1,51 +1,79 @@
-# Symfony Docker
+# Cryptocurrency Exchange Rate API
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
+## Tech Stack: PHP 8.4, Symfony 7.3, MySQL 8.3
+
+## Local environment setup
+* A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
 with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
-
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
-
-## Getting Started
 
 1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
 2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
+3. Run `docker compose up --d` to set up and start a project
 4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
 5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+6. To check the logs run `docker logs -f <container_name>`
 
-## Features
-
-* Production, development and CI ready
-* Just 1 service by default
-* Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://github.com/dunglas/frankenphp/blob/main/docs/worker.md) (automatically enabled in prod mode)
-* [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-* Automatic HTTPS (in dev and prod)
-* HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-* Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-* [Vulcain](https://vulcain.rocks) support
-* Native [XDebug](docs/xdebug.md) integration
-* Super-readable configuration
-
-**Enjoy!**
-
-## Docs
+## Setup Docs
 
 1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+2. [Debugging with Xdebug](docs/xdebug.md)
+3. [TLS Certificates](docs/tls.md)
+4. [Troubleshooting](docs/troubleshooting.md)
 
-## License
+## Web API application
 
-Symfony Docker is available under the MIT License.
+### The app has two endpoints:
+1. `https://localhost/api/rates/last-24h?pair=EUR/ETH`
+   - Rates for the last 24 hours(every 5 minutes)
+2. `https://localhost/api/rates/day?pair=EUR/BTC&date=2025-09-07`
+   - Rates for the specified day (every 5 minutes)
 
-## Credits
+### Response data example
+```json
+{
+    "datasets": [
+        {
+            "label": "EUR/BTC (2025-09-10)",
+            "data": [
+                {
+                    "x": "2025-09-10 07:13:16",
+                    "y": 95678.71
+                },
+                {
+                    "x": "2025-09-10 07:18:16",
+                    "y": 95626.35
+                },
+                {
+                    "x": "2025-09-10 07:23:16",
+                    "y": 95739.35
+                },
+                {
+                    "x": "2025-09-10 07:28:16",
+                    "y": 95803.56
+                },
+                ...
+            ],
+            "borderColor": "rgba(75, 192, 192, 1)",
+            "backgroundColor": "rgba(75, 192, 192, 0.2)",
+            "tension": 0.1
+        }
+    ]
+}
+```
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+### Response data could be used as a datasets for [chartjs](https://www.chartjs.org/docs/latest/charts/line.html)
+
+![chart.png](docs/chart.png)
+
+## Developers information
+ - Connect to the docker container: `docker exec -it <container_name> bash`
+### Linters & Static analyzers commands to run inside docker php container:
+```
+./vendor/bin/php-cs-fixer fix src --diff --dry-run
+./vendor/bin/rector process --dry-run src/
+./vendor/bin/rector process --dry-run tests/
+./vendor/bin/phpstan analyze
+```
+
+### Tests:
+`./vendor/bin/phpunit`

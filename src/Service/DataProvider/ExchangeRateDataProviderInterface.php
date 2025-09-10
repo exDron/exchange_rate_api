@@ -4,5 +4,10 @@ namespace App\Service\DataProvider;
 
 interface ExchangeRateDataProviderInterface
 {
-    public function getRates(array $symbols, array $intervals): array;
+    /**
+     * @param string[] $symbols
+     *
+     * @return array<int, array{symbol: string, price: string}>
+     */
+    public function getRates(array $symbols): array;
 }

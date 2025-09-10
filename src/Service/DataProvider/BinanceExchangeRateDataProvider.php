@@ -9,11 +9,16 @@ class BinanceExchangeRateDataProvider implements ExchangeRateDataProviderInterfa
 {
     private const string API_URL = 'https://data-api.binance.vision/api/v3/ticker/price';
 
-    public function __construct(private readonly HttpClientInterface $client,)
+    public function __construct(private readonly HttpClientInterface $client)
     {
     }
 
-    public function getRates(array $symbols = [], array $intervals = []): array
+    /**
+     * @param string[] $symbols
+     *
+     * @return array<int, array{symbol: string, price: string}>
+     */
+    public function getRates(array $symbols): array
     {
         try {
             $response = $this->client->request(
@@ -23,14 +28,10 @@ class BinanceExchangeRateDataProvider implements ExchangeRateDataProviderInterfa
                     'query' => [
                         'symbols' => json_encode($symbols),
                     ],
-                    'headers' => [
-                        'intervalLetter' => 'M',
-                        'intervalNum' => 5,
-                    ],
                 ]
             );
         } catch (TransportExceptionInterface $e) {
-
+            throw new \RuntimeException('Failed to fetch Binance rates', 0, $e);
         }
 
         $content = $response->toArray();

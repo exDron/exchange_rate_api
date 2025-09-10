@@ -14,29 +14,18 @@ class ExchangeRate
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id;
-
-    #[ORM\Column(length: 7)]
-    private string $symbol;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 8)]
-    private string $price;
+    private readonly int $id;
 
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d H:i:s'])]
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
-    /**
-     * @param string|null $symbol
-     * @param string|null $price
-     */
-    public function __construct(?string $symbol, ?string $price)
+    public function __construct(#[ORM\Column(length: 7)]
+        private string $symbol, #[ORM\Column(type: Types::DECIMAL, precision: 20, scale: 8)]
+        private string $price)
     {
-        $this->symbol = $symbol;
-        $this->price = $price;
         $this->createdAt = new \DateTimeImmutable();
     }
-
 
     public function getId(): int
     {
@@ -71,5 +60,4 @@ class ExchangeRate
     {
         return $this->createdAt;
     }
-
 }

@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\ExchangeRate;
-use DateMalformedStringException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,7 +18,8 @@ class ExchangeRateRepository extends ServiceEntityRepository
 
     /**
      * @return ExchangeRate[] Returns an array of ExchangeRate objects
-     * @throws DateMalformedStringException
+     *
+     * @throws \DateMalformedStringException
      */
     public function getLast24hRates(string $symbols): array
     {
@@ -30,13 +30,15 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->andWhere('er.createdAt > :last24h')
             ->setParameter('symbols', $symbols)
             ->setParameter('last24h', $last24H)
+            ->orderBy('er.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
     /**
      * @return ExchangeRate[] Returns an array of ExchangeRate objects
-     * @throws DateMalformedStringException
+     *
+     * @throws \DateMalformedStringException
      */
     public function getSelectedDayRates(string $symbols, \DateTimeImmutable $day): array
     {
@@ -49,6 +51,7 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->setParameter('symbols', $symbols)
             ->setParameter('day', $day)
             ->setParameter('nextDay', $nextDay)
+            ->orderBy('er.createdAt', 'ASC')
             ->getQuery()
             ->getResult();
     }
