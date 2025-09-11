@@ -27,12 +27,9 @@ final class ExchangeRateApiController extends AbstractController
         $pair = strtoupper(trim($input));
         $violations = $this->validator->validate($pair, [new PairConstraint()]);
         if (\count($violations) > 0) {
-            $this->logger->error($violations[0]->getMessage());
-
-            return $this->json(['error' => $violations[0]->getMessage()], 400);
+            return $this->errorResponse($violations[0]->getMessage());
         }
-        [$base, $quote] = array_map('trim', explode('/', $pair));
-        $symbols = $quote.$base; // e.g., BTC/USD -> USDBTC
+        $symbols = $this->getPairString($pair);
 
         $rates = $this->exchangeRateService->getLast24hRates($symbols);
 
@@ -46,26 +43,18 @@ final class ExchangeRateApiController extends AbstractController
         $pair = strtoupper(trim($input));
         $violations = $this->validator->validate($pair, [new PairConstraint()]);
         $date = (string) $request->get('date');
-        if (\count($violations) > 0) {
-            $this->logger->error($violations[0]->getMessage());
-
-            return $this->json(['error' => $violations[0]->getMessage()], 400);
-        }
         if ('' === $date) {
-            $dateErrorMessage = 'Missing date. Expected format YYYY-MM-DD or ISO date';
-            $this->logger->error($dateErrorMessage);
-
-            return $this->json(['error' => $dateErrorMessage], 400);
+            return $this->errorResponse('Missing date. Expected format YYYY-MM-DD or ISO date');
         }
-        [$base, $quote] = array_map('trim', explode('/', $pair));
-        $symbols = $quote.$base;
+        if (\count($violations) > 0) {
+            return $this->errorResponse($violations[0]->getMessage());
+        }
+        $symbols = $this->getPairString($pair);
 
         try {
             $day = new \DateTimeImmutable($date);
         } catch (\DateMalformedStringException $e) {
-            $this->logger->error($e->getMessage());
-
-            return $this->json(['error' => $e->getMessage()], 400);
+            return $this->errorResponse($e->getMessage());
         }
         $rates = $this->exchangeRateService->getSelectedDayRates($symbols, $day);
 
@@ -107,5 +96,20 @@ final class ExchangeRateApiController extends AbstractController
             'backgroundColor' => 'rgba(75, 192, 192, 0.2)',
             'tension' => 0.1,
         ]];
+    }
+
+    private function errorResponse(string $errorMessage, int $errorCode = 400): JsonResponse
+    {
+        $this->logger->error($errorMessage);
+
+        return $this->json(['error' => $errorMessage], $errorCode);
+    }
+
+    public function getPairString(string $pair): string
+    {
+        [$base, $quote] = array_map('trim', explode('/', $pair));
+        $symbols = $quote.$base; // e.g., BTC/USD -> USDBTC
+
+        return $symbols;
     }
 }
