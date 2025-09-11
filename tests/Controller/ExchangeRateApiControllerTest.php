@@ -20,22 +20,22 @@ final class ExchangeRateApiControllerTest extends WebTestCase
         $mock = $this->createMock(ExchangeRateService::class);
         $mock->expects($this->once())
             ->method('getLast24hRates')
-            ->with('USDBTC')
+            ->with('EURBTC')
             ->willReturn([
-                $this->makeRate('USDBTC', '123.45000000'),
-                $this->makeRate('USDBTC', '130.00000000'),
+                $this->makeRate('EURBTC', '123.45000000'),
+                $this->makeRate('EURBTC', '130.00000000'),
             ]);
 
         static::getContainer()->set(ExchangeRateService::class, $mock);
 
-        $client->request('GET', '/api/rates/last-24h?pair=BTC/USD');
+        $client->request('GET', '/api/rates/last-24h?pair=BTC/EUR');
 
         self::assertResponseIsSuccessful();
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         self::assertArrayHasKey('datasets', $data);
         self::assertCount(1, $data['datasets']);
         $ds = $data['datasets'][0];
-        self::assertSame('BTC/USD (last 24h)', $ds['label']);
+        self::assertSame('BTC/EUR (last 24h)', $ds['label']);
         self::assertArrayHasKey('data', $ds);
         self::assertCount(2, $ds['data']);
         self::assertArrayHasKey('x', $ds['data'][0]);
@@ -59,7 +59,8 @@ final class ExchangeRateApiControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/rates/day?pair=BTC/USD');
+        // use supported pair to pass pair validation and trigger date validation
+        $client->request('GET', '/api/rates/day?pair=BTC/EUR');
 
         self::assertResponseStatusCodeSame(400);
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
@@ -75,23 +76,23 @@ final class ExchangeRateApiControllerTest extends WebTestCase
         $mock->expects($this->once())
             ->method('getSelectedDayRates')
             ->with(
-                'USDETH',
+                'EURETH',
                 $this->callback(fn($d) => $d instanceof \DateTimeImmutable && $d->format('Y-m-d') === '2024-01-15')
             )
             ->willReturn([
-                $this->makeRate('USDETH', '2000.00000000'),
+                $this->makeRate('EURETH', '2000.00000000'),
             ]);
 
         static::getContainer()->set(ExchangeRateService::class, $mock);
 
-        $client->request('GET', '/api/rates/day?pair=eth/usd&date=2024-01-15');
+        $client->request('GET', '/api/rates/day?pair=eth/eur&date=2024-01-15');
 
         self::assertResponseIsSuccessful();
         $data = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
         self::assertArrayHasKey('datasets', $data);
         self::assertCount(1, $data['datasets']);
         $ds = $data['datasets'][0];
-        self::assertSame('ETH/USD (2024-01-15)', $ds['label']);
+        self::assertSame('ETH/EUR (2024-01-15)', $ds['label']);
         self::assertCount(1, $ds['data']);
         self::assertArrayHasKey('x', $ds['data'][0]);
         self::assertArrayHasKey('y', $ds['data'][0]);

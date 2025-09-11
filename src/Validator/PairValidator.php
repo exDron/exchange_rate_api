@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
@@ -7,6 +9,13 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class PairValidator extends ConstraintValidator
 {
+    /**
+     * @param string[] $exchangeRatePairs
+     */
+    public function __construct(private readonly array $exchangeRatePairs)
+    {
+    }
+
     /**
      * @param string|null $value
      * @param Pair        $constraint
@@ -45,6 +54,10 @@ class PairValidator extends ConstraintValidator
 
         if ($base === $quote) {
             $this->context->buildViolation($constraint->messageDifferent)->addViolation();
+        }
+
+        if (!in_array($quote.$base, $this->exchangeRatePairs, true)) {
+            $this->context->buildViolation($constraint->messageNotSupported)->addViolation();
         }
     }
 }

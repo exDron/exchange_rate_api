@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
@@ -20,6 +22,7 @@ class Pair extends Constraint
     public string $messageNonEmpty = 'Invalid pair. BASE and QUOTE must be non-empty';
     public string $messageTicker = 'Invalid pair. BASE and QUOTE must be exactly 3 uppercase letters A-Z';
     public string $messageDifferent = 'Invalid pair. BASE and QUOTE must be different';
+    public string $messageNotSupported = 'Invalid pair. This pair is not supported';
 
     #[\Override]
     public function validatedBy(): string

@@ -12,6 +12,7 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
 4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
 5. Run `docker compose down --remove-orphans` to stop the Docker containers.
 6. To check the logs run `docker logs -f <container_name>`
+7. Connect to the docker container: `docker exec -it <container_name> bash`
 
 ## Setup Docs
 
@@ -24,6 +25,8 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
 
  - On the `docker compose up` the application starts **Scheduler** tasks to parse exchange rates every 5 minutes
    (The command is here: [compose.yaml](compose.yaml?L58))
+ - The currencies pairs supported by default: EUR/BTC, EUR/ETH, EUR/LTC
+ - The currencies pair can be extended via adjusting .env variable [EXCHANGE_RATE_PAIRS](.env?L40)
 
 ### The app has two endpoints:
 1. `https://localhost/api/rates/last-24h?pair=EUR/ETH`
@@ -53,7 +56,7 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
                 {
                     "x": "2025-09-10 07:28:16",
                     "y": 95803.56
-                },
+                }
             ],
             "borderColor": "rgba(75, 192, 192, 1)",
             "backgroundColor": "rgba(75, 192, 192, 0.2)",
@@ -68,7 +71,7 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
 ![chart.png](docs/chart.png)
 
 ## Developers information
- - Connect to the docker container: `docker exec -it <container_name> bash`
+
 ### Linters & Static analyzers commands to run inside docker php container:
 ```
 ./vendor/bin/php-cs-fixer fix src --diff --dry-run

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Scheduler;
 
 use App\Scheduler\Message\SaveExchangeRate;
@@ -13,7 +15,10 @@ class SaveExchangeRateProvider implements ScheduleProviderInterface
 {
     private readonly Schedule $schedule;
 
-    public function __construct()
+    /**
+     * @param string[] $exchangeRatePairs
+     */
+    public function __construct(private readonly array $exchangeRatePairs)
     {
         $this->schedule = new Schedule();
     }
@@ -22,7 +27,7 @@ class SaveExchangeRateProvider implements ScheduleProviderInterface
     {
         return $this->schedule
             ->with(
-                RecurringMessage::every('5 minutes', new SaveExchangeRate(['BTCEUR', 'ETHEUR', 'LTCEUR']))
+                RecurringMessage::every('5 minutes', new SaveExchangeRate($this->exchangeRatePairs)),
             );
     }
 }

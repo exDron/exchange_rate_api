@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\DataProvider;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -9,7 +12,7 @@ class BinanceExchangeRateDataProvider implements ExchangeRateDataProviderInterfa
 {
     private const string API_URL = 'https://data-api.binance.vision/api/v3/ticker/price';
 
-    public function __construct(private readonly HttpClientInterface $client)
+    public function __construct(private readonly HttpClientInterface $client, private readonly LoggerInterface $logger)
     {
     }
 
@@ -31,6 +34,7 @@ class BinanceExchangeRateDataProvider implements ExchangeRateDataProviderInterfa
                 ]
             );
         } catch (TransportExceptionInterface $e) {
+            $this->logger->error($e->getMessage());
             throw new \RuntimeException('Failed to fetch Binance rates', 0, $e);
         }
 
