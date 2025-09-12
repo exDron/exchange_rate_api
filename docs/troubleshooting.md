@@ -4,6 +4,12 @@
 
 If you work on linux and cannot edit some of the project files right after the first installation, you can run `docker compose run --rm php chown -R $(id -u):$(id -g) .` to set yourself as owner of the project files that were created by the docker container.
 
+## Port error issue  
+
+Error: `failed to bind host port for 0.0.0.0:80:172.19.0.3:80/tcp: address already in use`
+If there is a similar error, most likely some local service (apache2, nginx) blocked this port, so it should be stopped.
+Ex for linux ubuntu: `sudo service apache2 stop`
+
 ## TLS/HTTPS Issues
 
 See more in the [TLS section](tls.md)
