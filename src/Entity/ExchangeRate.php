@@ -11,6 +11,9 @@ use Symfony\Component\Serializer\Attribute\Context;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: ExchangeRateRepository::class)]
+#[ORM\Table(name: 'exchange_rate', indexes: [
+    new ORM\Index(name: 'idx_symbol_created_at', columns: ['symbol', 'created_at']),
+])]
 class ExchangeRate
 {
     #[ORM\Id]
