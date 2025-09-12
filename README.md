@@ -74,7 +74,8 @@ with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) 
 
 ### SQL dump
  - To prefill database with some data the sql dump(`exchange_rate.sql`) in the project could be used
- - The command example: `docker exec <container_name> /usr/bin/mysqldump -u ex_user --password=ex_pass --no-tablespaces crypto_exchange_rate < exchange_rate.sql`
+ - The command example: `docker exec -i <container_name> \
+  mysql -u ex_user -pex_pass crypto_exchange_rate < exchange_rate.sql`
 
 ### Linters & Static analyzers commands to run inside docker php container:
 ```
